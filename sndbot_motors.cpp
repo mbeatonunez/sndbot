@@ -14,7 +14,7 @@
 int motor_left[] = {2, 3, 4, 5};
 int motor_right[] = {6, 7, 8, 9};
 
-uint8_t speed = 92;   // 75% of max speed (255)
+uint8_t speed = 128;   // 75% of max speed (255)
 
 unsigned long previousMillis = 0;
 
