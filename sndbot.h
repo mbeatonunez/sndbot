@@ -10,7 +10,7 @@
 #include <HardwareSerial.h>
 #include "Arduino.h"
 
-#define VERSION 0.1
+#define VERSION 0.2
 
 //global variables 
 extern uint8_t speed;
@@ -26,6 +26,10 @@ void drive_backward(void);
 void turn_left(void);
 void turn_right(void);
 void motor_stop(void); 
+void rotate_right(int angleInDegrees);
+void rotate_left(int angleInDegrees);
 
+// sndbot_sonar.c
+void obstacle_avoid(void);
 
 #endif

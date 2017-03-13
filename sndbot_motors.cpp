@@ -14,7 +14,7 @@
 int motor_left[] = {2, 3, 4, 5};
 int motor_right[] = {6, 7, 8, 9};
 
-uint8_t speed = 128;   // 75% of max speed (255)
+uint8_t speed = 192;   // max speed (255)
 
 unsigned long previousMillis = 0;
 
@@ -99,5 +99,17 @@ void motor_stop(void)
   digitalWrite(motor_right[3], LOW);
 }
 
-
+//angle is dependent on motor speed
+void rotate_right(int angleInDegrees) {
+  for(int i=0; i< angleInDegrees; i++) {
+    turn_right();
+    delay(25); // adjust with speed
+  }
+}
+void rotate_left(int angleInDegrees) {
+  for(int i=0; i< angleInDegrees; i++) {
+    turn_left();
+    delay(25); // adjust with speed
+  }
+}
 
