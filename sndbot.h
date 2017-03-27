@@ -7,7 +7,7 @@
 #ifndef SNDBOT_HEADER
 #define SNDBOT_HEADER
 
-#include <HardwareSerial.h>
+//#include <HardwareSerial.h>
 #include "Arduino.h"
 
 #define VERSION 0.3
