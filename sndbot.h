@@ -7,10 +7,9 @@
 #ifndef SNDBOT_HEADER
 #define SNDBOT_HEADER
 
-//#include <HardwareSerial.h>
 #include "Arduino.h"
 
-#define VERSION 0.3
+#define VERSION 0.4
 
 //global variables 
 extern uint8_t speed;
