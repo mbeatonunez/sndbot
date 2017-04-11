@@ -74,7 +74,11 @@ void obstacle_avoid(void)
   	else if(distance_left < (PING_MIN_DISTANCE+20)) 
   	{
         turn_right();
-  	}		
+  	}	
+    else if((distance_right < PING_MIN_DISTANCE)&& (distance_left < (PING_MIN_DISTANCE+20)))
+    {
+      drive_backward();	
+    }
   	else  
   	{
    	    drive_forward();

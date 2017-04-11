@@ -13,9 +13,9 @@
 
 Pixy pixy;
 
-enum FSM state_pixy;
+enum FSM_PIXY state_pixy;
 
-static void pixy_fsm(void);
+
 static void init_scan(void);
 
 // pixy vatiables
@@ -38,16 +38,18 @@ void pixy_setup(void)
   state_pixy = STATE_WAIT_ON_MAIN; 
 }
 
-
-static void pixy_fsm(void)
+ void pixy_fsm(void)
 {
 	switch (state_pixy)
 	{
 		case STATE_PIXY_INIT:   //get area of target when first encountered
+      Serial.println("Pixy init scan");
+			motor_stop();
 			init_scan();
-			state_pixy = STATE_CENTER;
+      state_pixy = STATE_CENTER;
 			break;
 		case STATE_CENTER:
+      Serial.println("Center State");
 			pixy_scan();
 			if (x < Xmin)//turn left if x position < max x position    
 			{
@@ -61,35 +63,45 @@ static void pixy_fsm(void)
 			}
 			else  // When target is centered
 			{
+        Serial.println("Target Centered");
 				motor_stop();
 				state_pixy = STATE_GET_TARGET;
 			}
 			break;
 		case STATE_GET_TARGET:
 			 pixy_scan();
+       Serial.println("Get Target State");
 			 newarea = width * height;
 			 if (newarea < minArea)//go forward if object too small
 			 {
+        Serial.println("Too Far");
 				drive_forward();
+        Serial.print("New Area = ");
 				Serial.print(newarea);
 				Serial.print("   ");
+        Serial.print("Max Area = ");
 				Serial.println(maxArea);
 			 }
 			 else if(newarea > maxArea)//go backward if object too big
 			 {
+        Serial.println("Too Close");
 				drive_backward();
+        Serial.print("New Area = ");
 				Serial.print(newarea);
 				Serial.print("   ");
+        Serial.println("Min Area = ");
 				Serial.println(minArea); 
 			 }
 			 else 
 			 {
+        Serial.println("Tagert Reached");
 				motor_stop();
 				state_pixy = STATE_WAIT_ON_MAIN;
 				state = STATE_FIRE; 
 			 }			
 			break;
 		case STATE_WAIT_ON_MAIN:
+    Serial.println("Wait on main");
 			// Do nothing, wait on main FSM
 			break;
 	}
@@ -100,29 +112,36 @@ static void pixy_fsm(void)
 void pixy_scan(void)  						//scan for targets and get block parameters
 {
   blocks = pixy.getBlocks();  				//receive data from pixy 
-  signature = pixy.blocks[i].signature;    	//get object's signature
-  x = pixy.blocks[i].x;                    	//get x position
-  width = pixy.blocks[i].width;            	//get width
-  height = pixy.blocks[i].height;          	//get heigh
-  if (!blocks)								//if no target is found during scan, return to default parameters
+  if (blocks)
   {
-	state = STATE_INIT;					
-	state_pixy = STATE_WAIT_ON_MAIN; 
+    Serial.println("Found Blocks");
+    signature = pixy.blocks[i].signature;    	//get object's signature
+    x = pixy.blocks[i].x;                    	//get x position
+    width = pixy.blocks[i].width;            	//get width
+    height = pixy.blocks[i].height;          	//get heigh
+  }
+  else if (!blocks)								//if no target is found during scan, return to default parameters
+  {
+    Serial.println("NO BLOCKS -> EXIT TO MAIN");
+    state = STATE_INIT;					
+  	state_pixy = STATE_WAIT_ON_MAIN; 
   }
   return;
 }
 
 static void init_scan(void)					
 {
-    for (int j = 0; j < 5: j++)
+    for (int j = 0; j < 5; j++)
 	{
 		pixy_scan();
 		area = width * height; 				//calculate the object area 
-		maxArea = area + 100;				//set the max distance from target
-		minArea = area - 120;				//set the min distance from target
+		maxArea = area + 100;				  //set the max distance from target
+		minArea = area - 1020;				//set the min distance from target
+    Serial.print("Area = ");
 		Serial.println(area);
 		delay(200);
     }
-
+    state_pixy = STATE_CENTER;
+    return;
 }
   
