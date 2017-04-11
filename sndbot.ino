@@ -17,10 +17,10 @@ void loop() {
 	{
 		switch(state)
 		{
-			case STATE_INIT:
+			case STATE_INIT: // enter obstacle avoidance
 				obstacle_avoid();
 				pixy_scan();
-				if (blocks)
+				if (blocks) // change states if target has been identified 
 				{
 					motor_stop();
 					state_pixy = STATE_PIXY_INIT;
