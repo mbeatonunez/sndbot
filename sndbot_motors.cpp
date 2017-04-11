@@ -11,105 +11,70 @@
 
 // pins for the right and left side of the drivetrain
 // using the skid-steer configuration
-int motor_left[] = {2, 3, 4, 5};
-int motor_right[] = {6, 7, 8, 9};
 
-uint8_t speed = 160;   // max speed (255)
+int motor_left[] = {5,6};
+int motor_right[] = {3,4};
+int enableA = 2;
+int enableB = 7;
+
+uint8_t speed = 150;   // max speed (255)
 
 unsigned long previousMillis = 0;
 
-void morot_setup(void) 
+void motor_setup(void) 
 {
-  for(int i = 0; i < 4; i++) //initialize all pins as outputs
-  {
-    pinMode(motor_left[i], OUTPUT);
-    pinMode(motor_right[i], OUTPUT);
-  }
+  pinMode(enableA, OUTPUT);
+  pinMode(enableB, OUTPUT);
+  digitalWrite(enableA, HIGH);
+  digitalWrite(enableB, HIGH);
+  
 }
 
 void drive_backward(void) 
 {
-  //set pins 2, 4, 7 and 9 to HIGH
-  //set pins 3, 5, 6, and 8 to LOW
   analogWrite(motor_left[0], speed);
-  digitalWrite(motor_left[1], LOW); 
-  analogWrite(motor_left[2], speed);  
-  digitalWrite(motor_left[3], LOW);
+  analogWrite(motor_left[1], 0); 
 
-  digitalWrite(motor_right[0], LOW);
-  analogWrite(motor_right[1], speed);
-  digitalWrite(motor_right[2], LOW);
-  analogWrite(motor_right[3], speed);
+  analogWrite(motor_right[0], speed);
+  analogWrite(motor_right[1], 0); 
 }
 
 void drive_forward(void) 
 {
-  //set pins 2, 4, 7 and 9 to LOW
-  //set pins 3, 5, 6, and 8 to HIGH
-  digitalWrite(motor_left[0], LOW);
+  analogWrite(motor_left[0], 0);
   analogWrite(motor_left[1], speed);
-  digitalWrite(motor_left[2], LOW);
-  analogWrite(motor_left[3], speed);  
-  
-  analogWrite(motor_right[0], speed);
-  digitalWrite(motor_right[1], LOW);
-  analogWrite(motor_right[2], speed);
-  digitalWrite(motor_right[3], LOW);
-}
-void turn_left(void) 
-{
-  // turn left side off
-  // move right side forward
-  analogWrite(motor_left[0], speed);
-  digitalWrite(motor_left[1], LOW);
-  analogWrite(motor_left[2], speed);
-  digitalWrite(motor_left[3], LOW);
-  
-  analogWrite(motor_right[0], speed);
-  digitalWrite(motor_right[1], LOW);
-  analogWrite(motor_right[2], speed);
-  digitalWrite(motor_right[3], LOW);
-}
 
+  analogWrite(motor_right[0], 0);
+  analogWrite(motor_right[1], speed);
+ 
+}
 void turn_right(void) 
 {
-  // turn right side off
-  // move left side forward  
-  digitalWrite(motor_left[0], LOW);
+  //right_side back, left_side forward 
+  analogWrite(motor_left[0], 0);
   analogWrite(motor_left[1], speed);
-  digitalWrite(motor_left[2], LOW);
-  analogWrite(motor_left[3], speed);
 
-  digitalWrite(motor_right[0], LOW);
+  analogWrite(motor_right[0], speed);
+  analogWrite(motor_right[1], 0);
+}
+
+void turn_left(void) 
+{
+   //left_side back, right_side forward 
+  analogWrite(motor_left[0], speed);
+  analogWrite(motor_left[1], 0); 
+
+  analogWrite(motor_right[0], 0);
   analogWrite(motor_right[1], speed);
-  digitalWrite(motor_right[2], LOW);
-  analogWrite(motor_right[3], speed);
 }
 
 void motor_stop(void)
 {
-  digitalWrite(motor_left[0], LOW); 
-  digitalWrite(motor_left[1], LOW); 
-  digitalWrite(motor_left[2], LOW);
-  digitalWrite(motor_left[3], LOW);  
+  analogWrite(motor_left[0], 0); 
+  analogWrite(motor_left[1], 0); 
   
-  digitalWrite(motor_right[0], LOW); 
-  digitalWrite(motor_right[1], LOW);
-  digitalWrite(motor_right[2], LOW); 
-  digitalWrite(motor_right[3], LOW);
-}
+  analogWrite(motor_right[0], 0); 
+  analogWrite(motor_right[1], 0);
 
-//angle is dependent on motor speed
-void rotate_right(int angleInDegrees) {
-  for(int i=0; i< angleInDegrees; i++) {
-    turn_right();
-    delay(25); // adjust with speed
-  }
-}
-void rotate_left(int angleInDegrees) {
-  for(int i=0; i< angleInDegrees; i++) {
-    turn_left();
-    delay(25); // adjust with speed
-  }
 }
 
