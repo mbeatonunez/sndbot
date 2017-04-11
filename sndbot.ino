@@ -1,5 +1,6 @@
 #include "sndbot.h"
 
+enum FSM state;
 
 void setup() {
 
@@ -7,26 +8,39 @@ void setup() {
   motor_setup();
   pixy_setup();
   sonar_setup();
+  state = STATE_INIT;
 }
 
 void loop() {
-
-
-  pixy_scan();
-  if (blocks)
-  {
-    //Serial.println("Target Detected");
-     init_scan();
-    while(blocks)
-    {
-      pixy_find();
-    }
-  }
-    else
-    {
-      //Serial.println("Target lost");
-      //obstacle_avoid();
-    }
+	
+	while (1) // main state machine
+	{
+		switch(state)
+		{
+			case STATE_INIT:
+				obstacle_avoid();
+				pixy_scan();
+				if (blocks)
+				{
+					motor_stop();
+					state_pixy = STATE_PIXY_INIT;
+					state = STATE_WAIT_ON_PIXY;
+				}
+				break;
+			case STATE_WAIT_ON_PIXY:
+				// Do nothing, and wait on pixy to finish
+				break;
+			case STATE_FIRE:
+				//replace with fire mechanism
+				delay(2500);
+				turn_right();
+				delay(1000);
+				state = STATE_INIT;
+				break;
+			
+		}
+		
+	}  
 }
 
 

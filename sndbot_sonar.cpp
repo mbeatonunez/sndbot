@@ -5,8 +5,6 @@
  * March 2017
  */
 #include "sndbot.h"
-#include <NewPing.h>
-
 
 // Trigger and Echo pins per sensor 
 #define TRIGGER_FRONT     22
@@ -19,28 +17,25 @@
 #define PING_MAX_DISTANCE 200
 #define PING_MIN_DISTANCE 30  //Min distance from obstacle
 
-  uint8_t interval =      50; // interval at which pings will be send
+long distance_front, duration_front; 
+long distance_right, duration_right;
+long distance_left,  duration_left;
 
-  long distance_front, duration_front; 
-  long distance_right, duration_right;
-  long distance_left,  duration_left;
-
-  //distance and debugging functions
-  
-  static long right_sensor(void);
-  static long left_sensor(void);
-  static void sensor_debugging(void);
+//distance and debugging functions
+static long front_sensor(void);
+static long right_sensor(void);
+static long left_sensor(void);
+static void sensor_debugging(void);
 
 void sonar_setup(void)
 {
   pinMode(TRIGGER_FRONT, OUTPUT);
   pinMode(TRIGGER_RIGHT, OUTPUT);
-  pinMode(TRIGGER_LEFT, OUTPUT);
+  pinMode(TRIGGER_LEFT,  OUTPUT);
 
   pinMode(ECHO_FRONT, INPUT);
   pinMode(ECHO_RIGHT, INPUT);
-  pinMode(ECHO_LEFT, INPUT);
- 	//NewPing::timer_ms(interval, obstacle_avoid); //check for obstacles every 50 ms
+  pinMode(ECHO_LEFT,  INPUT);
 }
 
 
@@ -68,15 +63,15 @@ void obstacle_avoid(void)
     }
 
     //avoid obstacles, else drive forward
-    if(distance_front != NO_ECHO && distance_front < (PING_MIN_DISTANCE+20)) 
+    if(distance_front < (PING_MIN_DISTANCE+20)) 
   	{
         turn_left();     
   	}
-  	else if(distance_right != NO_ECHO && distance_right < PING_MIN_DISTANCE) 
+  	else if(distance_right < PING_MIN_DISTANCE) 
   	{
         turn_left();
     }
-  	else if(distance_left != NO_ECHO && distance_left < (PING_MIN_DISTANCE+20)) 
+  	else if(distance_left < (PING_MIN_DISTANCE+20)) 
   	{
         turn_right();
   	}		

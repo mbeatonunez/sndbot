@@ -17,9 +17,7 @@ int motor_right[] = {3,4};
 int enableA = 2;
 int enableB = 7;
 
-uint8_t speed = 150;   // max speed (255)
-
-unsigned long previousMillis = 0;
+uint8_t speed = 128;   // max speed (255). Set to half speed
 
 void motor_setup(void) 
 {
