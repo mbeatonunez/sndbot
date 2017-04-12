@@ -1,6 +1,9 @@
 /*
  * S&D Bot pixy functions
  * 
+ * Using the CMUcam5 Pixy from ChemLabs
+ * url: http://charmedlabs.com/default/pixy-cmucam5/
+ * 
  * code inspired by CytronTechologies
  * Original code found https://github.com/CytronTechnologies/Arduino_Pixy_CMUcam5_Sensor
  * 
@@ -44,11 +47,13 @@ void pixy_setup(void)
 	{
 		case STATE_PIXY_INIT:   //get area of target when first encountered
       Serial.println("Pixy init scan");
+      display_state_pixy();
 			motor_stop();
 			init_scan();
       state_pixy = STATE_CENTER;
 			break;
-		case STATE_CENTER:
+		case STATE_CENTER:  // center target
+      display_state_pixy();
       Serial.println("Center State");
 			pixy_scan();
 			if (x < Xmin)//turn left if x position < max x position    
@@ -63,12 +68,15 @@ void pixy_setup(void)
 			}
 			else  // When target is centered
 			{
+        display_clear_action();
+        display_centered();
         Serial.println("Target Centered");
 				motor_stop();
 				state_pixy = STATE_GET_TARGET;
 			}
 			break;
-		case STATE_GET_TARGET:
+		case STATE_GET_TARGET: // get to predefined range of target
+       display_state_pixy();
 			 pixy_scan();
        Serial.println("Get Target State");
 			 newarea = width * height;
@@ -94,6 +102,8 @@ void pixy_setup(void)
 			 }
 			 else 
 			 {
+        display_clear_action();
+        display_target_reached();
         Serial.println("Tagert Reached");
 				motor_stop();
 				state_pixy = STATE_WAIT_ON_MAIN;
@@ -101,7 +111,8 @@ void pixy_setup(void)
 			 }			
 			break;
 		case STATE_WAIT_ON_MAIN:
-    Serial.println("Wait on main");
+      display_state_pixy();
+      Serial.println("Wait on main");
 			// Do nothing, wait on main FSM
 			break;
 	}
@@ -126,6 +137,7 @@ void pixy_scan(void)  						//scan for targets and get block parameters
     state = STATE_INIT;					
   	state_pixy = STATE_WAIT_ON_MAIN; 
   }
+  display_target_state();
   return;
 }
 

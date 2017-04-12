@@ -1,10 +1,13 @@
 /*
  * S&D Bot Ultrasonic Sensors
  * 
+ * Using HC-SR04 Sensors
+ * 
  * Moises Beato
  * March 2017
  */
 #include "sndbot.h"
+#include <NewPing.h>
 
 // Trigger and Echo pins per sensor 
 #define TRIGGER_FRONT     22
@@ -25,7 +28,6 @@ long distance_left,  duration_left;
 static long front_sensor(void);
 static long right_sensor(void);
 static long left_sensor(void);
-static void sensor_debugging(void);
 
 void sonar_setup(void)
 {
@@ -36,11 +38,14 @@ void sonar_setup(void)
   pinMode(ECHO_FRONT, INPUT);
   pinMode(ECHO_RIGHT, INPUT);
   pinMode(ECHO_LEFT,  INPUT);
+  //use timer interrupt to display the sensor values once every 0.5 seconds, independently of the rest of the program
+  NewPing::timer_ms(500, display_sensor_value);
 }
 
 
 void obstacle_avoid(void)
 {
+    display_avoid();
     /// ping echo cycle
     left_sensor();
     right_sensor();
@@ -83,7 +88,6 @@ void obstacle_avoid(void)
   	{
    	    drive_forward();
   	}
-   // sensor_debugging();
 }
 
 /// check distance from object
@@ -122,16 +126,4 @@ static long left_sensor(void)
 }
 /// end of distance check
 
-static void sensor_debugging(void)
-{
-   // sensor debugging
- Serial.print("front: "); 
- Serial.print(distance_front);
- Serial.print("    ");  
- Serial.print("right: "); 
- Serial.print(distance_right); 
- Serial.print("    ");
- Serial.print("left: "); 
- Serial.println(distance_left); 
-}
 

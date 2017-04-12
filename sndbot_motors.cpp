@@ -1,6 +1,9 @@
 /*
  * S&D Bot motors
  * 
+ * Using Chassis, Motors and Dual motor driver from the Kingduino 4WD Ultrasonic Robot Kit
+ * url: https://hobbyking.com/en_us/kingduino-4wd-ultrasonic-robot-kit.html
+ * 
  * Code inspired by !geek
  * url: http://tech.endeepak.com/blog/2016/01/02/simple-obstacle-avoiding-robot-using-arduino/
  * 
