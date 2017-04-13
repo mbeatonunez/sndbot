@@ -40,38 +40,55 @@ void setup() {
 }
 
 void loop() {
-	
-// main state machine
+	update_display();
+	// state machine
 	switch(state)
 	{
-		case STATE_INIT:          // enter obstacle avoidance
+		case STATE_INIT:      			// perform obstacle avoidance until target is found
 			obstacle_avoid();
-      display_state_main();   // display current state on LCD
-			pixy_scan();            // search for targets
-      if (blocks)
-      {
-        state = STATE_WAIT_ON_BLOCKS;
-      }
+			if (isTarget)
+			{
+				state = STATE_CENTER_TARGET;
+			}
 			break;
-    case STATE_WAIT_ON_BLOCKS: // transition state to isolate functions in init state
-      display_state_main();
-      state_pixy = STATE_PIXY_INIT;
-      state = STATE_WAIT_ON_PIXY;
-      break;
-		case STATE_WAIT_ON_PIXY:   // wait for pixy to find target
-			display_state_main();
-      pixy_fsm();
+		case STATE_CENTER_TARGET:  		// center robot to target
+			if (isCenter)
+			{
+				state = STATE_APPROACH_TARGET;
+			}
+			else if (!isTarget)    		// return to default state if target is lost
+			{
+				state = STATE_INIT;
+			}
 			break;
-		case STATE_FIRE:           // engage target
-      display_state_main();
-			delay(2500);             // simulate firing at target
-      display_clear_action();  // clear action section of LCD 
-			turn_right();            // face away from target and continue searching
-			delay(1000);
+		case STATE_APPROACH_TARGET: 	// get target to range
+			if (isReached)
+			{
+				state = STATE_ENGAGE_TARGET;
+			}
+			else if (!isTarget)    		// return to default state if target is lost
+			{
+				state = STATE_INIT;
+			}
+			break;
+		case STATE_ENGAGE_TARGET:  		// fire on target
+			engage_target();
 			state = STATE_INIT;
-			break;		
+			break;
+		default:
+			state = STATE_INIT;
+			break;
 	} 
 }
 
+void engage_target(void) //placeholder function until the taget engament sequence is completed
+{
+	//simulate target engagement
+	//digitalWrite(gunMotor, HIGH);
+	motor_stop(); //fire();
+	delay (3000);	
+	turn_left();
+	delay(1000);	
+}
 
 

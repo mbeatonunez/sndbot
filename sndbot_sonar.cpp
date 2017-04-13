@@ -7,7 +7,6 @@
  * March 2017
  */
 #include "sndbot.h"
-#include <NewPing.h>
 
 // Trigger and Echo pins per sensor 
 #define TRIGGER_FRONT     22
@@ -38,8 +37,6 @@ void sonar_setup(void)
   pinMode(ECHO_FRONT, INPUT);
   pinMode(ECHO_RIGHT, INPUT);
   pinMode(ECHO_LEFT,  INPUT);
-  //use timer interrupt to display the sensor values once every 0.5 seconds, independently of the rest of the program
-  NewPing::timer_ms(500, display_sensor_value);
 }
 
 
@@ -88,6 +85,7 @@ void obstacle_avoid(void)
   	{
    	    drive_forward();
   	}
+	return;
 }
 
 /// check distance from object

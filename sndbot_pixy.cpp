@@ -3,6 +3,11 @@
  * 
  * Using the CMUcam5 Pixy from ChemLabs
  * url: http://charmedlabs.com/default/pixy-cmucam5/
+ *
+ * Notes: The Pixy is connected to the Serial3 port (Tx3, Rx3) of the Arduino Mega, 
+ *        to avoid issues with the Serial1 port when compiling and uploading updates 
+ *        to the code. As a consequence, the PixyUART.h library was modified to use the
+ *        Serial3 port, rather then the Serial1 port.  
  * 
  * code inspired by CytronTechologies
  * Original code found https://github.com/CytronTechnologies/Arduino_Pixy_CMUcam5_Sensor
@@ -11,149 +16,76 @@
  * March 2017
  */
 #include "sndbot.h"
-#include <SPI.h>  
-#include <Pixy.h>
+#include <PixyUART.h>        // refer to notes avove
 
-Pixy pixy;
-
-enum FSM_PIXY state_pixy;
-
-
-static void init_scan(void);
+PixyUART pixy;               // using Serial3 port
 
 // pixy vatiables
-int signature;
-int x;                      // positon x axis
-unsigned int width;         // object's width
-unsigned int height;        // object's height
-unsigned int area;          // initial distance from object
-unsigned int newarea;       // compare distance from object
-int Xmin = 70;              // min x position
-int Xmax = 200;             // max x position
-int maxArea = 0;            // max distance from target
-int minArea = 0;            // min distance from target
+unsigned int area;          // predefined area of target 
 static int i = 0;           // iterate between signatures
-uint16_t blocks;
+
 
 void pixy_setup(void)
 { 
   pixy.init();
-  state_pixy = STATE_WAIT_ON_MAIN; 
 }
 
- void pixy_fsm(void)
+bool isTarget(void)                          //identify if a target is present
 {
-	switch (state_pixy)
+	bool target_state = false;
+	uint16_t blocks   = pixy.getBlocks();
+	if (blocks)
 	{
-		case STATE_PIXY_INIT:   //get area of target when first encountered
-      Serial.println("Pixy init scan");
-      display_state_pixy();
-			motor_stop();
-			init_scan();
-      state_pixy = STATE_CENTER;
-			break;
-		case STATE_CENTER:  // center target
-      display_state_pixy();
-      Serial.println("Center State");
-			pixy_scan();
-			if (x < Xmin)//turn left if x position < max x position    
-			{
-				turn_left();
-				Serial.println("Turning left");
-			}
-			else if (x > Xmax) //turn right if x position > max x position
-			{
-				turn_right();
-				Serial.println("Turning Right");
-			}
-			else  // When target is centered
-			{
-        display_clear_action();
-        display_centered();
-        Serial.println("Target Centered");
-				motor_stop();
-				state_pixy = STATE_GET_TARGET;
-			}
-			break;
-		case STATE_GET_TARGET: // get to predefined range of target
-       display_state_pixy();
-			 pixy_scan();
-       Serial.println("Get Target State");
-			 newarea = width * height;
-			 if (newarea < minArea)//go forward if object too small
-			 {
-        Serial.println("Too Far");
-				drive_forward();
-        Serial.print("New Area = ");
-				Serial.print(newarea);
-				Serial.print("   ");
-        Serial.print("Max Area = ");
-				Serial.println(maxArea);
-			 }
-			 else if(newarea > maxArea)//go backward if object too big
-			 {
-        Serial.println("Too Close");
-				drive_backward();
-        Serial.print("New Area = ");
-				Serial.print(newarea);
-				Serial.print("   ");
-        Serial.println("Min Area = ");
-				Serial.println(minArea); 
-			 }
-			 else 
-			 {
-        display_clear_action();
-        display_target_reached();
-        Serial.println("Tagert Reached");
-				motor_stop();
-				state_pixy = STATE_WAIT_ON_MAIN;
-				state = STATE_FIRE; 
-			 }			
-			break;
-		case STATE_WAIT_ON_MAIN:
-      display_state_pixy();
-      Serial.println("Wait on main");
-			// Do nothing, wait on main FSM
-			break;
+		motor_stop();
+		target_state  = true;
 	}
-	return;
-	
+	return target_state;
 }
 
-void pixy_scan(void)  						//scan for targets and get block parameters
+bool isCenter(void)  			             // center the robot to the target
 {
-  blocks = pixy.getBlocks();  				//receive data from pixy 
-  if (blocks)
-  {
-    Serial.println("Found Blocks");
-    signature = pixy.blocks[i].signature;    	//get object's signature
-    x = pixy.blocks[i].x;                    	//get x position
-    width = pixy.blocks[i].width;            	//get width
-    height = pixy.blocks[i].height;          	//get heigh
-  }
-  else if (!blocks)								//if no target is found during scan, return to default parameters
-  {
-    Serial.println("NO BLOCKS -> EXIT TO MAIN");
-    state = STATE_INIT;					
-  	state_pixy = STATE_WAIT_ON_MAIN; 
-  }
-  display_target_state();
-  return;
+	uint16_t blocks    = pixy.getBlocks();
+	int x              = pixy.blocks[i].x;   //get x position
+	int Xmin           = 70;                 // min x position
+	int Xmax           = 200;                // max x position
+	bool center_status = false; 
+	if (x < Xmin)                            //turn left if x position < max x position    
+		{
+			turn_left();
+		}
+	else if (x > Xmax) 						 //turn right if x position > max x position
+		{
+			turn_right();
+		}
+	else  									 // When target is centered
+		{
+			motor_stop();
+			center_status = true;
+		}
+	return center_status;
 }
 
-static void init_scan(void)					
+bool isReached(void)
 {
-    for (int j = 0; j < 5; j++)
-	{
-		pixy_scan();
-		area = width * height; 				//calculate the object area 
-		maxArea = area + 100;				  //set the max distance from target
-		minArea = area - 1020;				//set the min distance from target
-    Serial.print("Area = ");
-		Serial.println(area);
-		delay(200);
-    }
-    state_pixy = STATE_CENTER;
-    return;
+	uint16_t blocks      = pixy.getBlocks();
+	unsigned int width   = pixy.blocks[i].width;   //get width       
+	unsigned int height  = pixy.blocks[i].height;  //get heigh 
+	unsigned int newarea = width * height;         // compare distance from target
+	bool reached_status = false;
+	if (newarea < (area-10))					   //go forward if too far
+		{
+			drive_forward();
+		}
+	 else if(newarea > (area+10))				   //go backward if too close
+		{
+			drive_backward();
+		}
+	 else 
+		{
+			motor_stop();
+			reached_status = true;
+		}
+	return reached_status;
 }
-  
+
+		
