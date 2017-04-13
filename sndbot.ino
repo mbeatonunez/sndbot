@@ -28,6 +28,7 @@
 #include "sndbot.h"
 
 enum FSM state;            // main state machine
+void engage_target(void);  // place holder function
 
 void setup() {
 
@@ -40,38 +41,42 @@ void setup() {
 }
 
 void loop() {
-	update_display();
+
 	// state machine
 	switch(state)
 	{
 		case STATE_INIT:      			// perform obstacle avoidance until target is found
 			obstacle_avoid();
-			if (isTarget)
+      update_display();
+			if (isTarget())
 			{
 				state = STATE_CENTER_TARGET;
 			}
 			break;
 		case STATE_CENTER_TARGET:  		// center robot to target
-			if (isCenter)
+			update_display();
+			if (isCenter())
 			{
 				state = STATE_APPROACH_TARGET;
 			}
-			else if (!isTarget)    		// return to default state if target is lost
-			{
-				state = STATE_INIT;
-			}
-			break;
+//			else if (!isTarget())    		// return to default state if target is lost
+//			{
+//				state = STATE_INIT;
+//			}
+  			break;
 		case STATE_APPROACH_TARGET: 	// get target to range
-			if (isReached)
+			update_display();
+			if (isReached())
 			{
 				state = STATE_ENGAGE_TARGET;
 			}
-			else if (!isTarget)    		// return to default state if target is lost
-			{
-				state = STATE_INIT;
-			}
-			break;
+//			else if (!isTarget())    		// return to default state if target is lost
+//			{
+//				state = STATE_INIT;
+//			}
+  			break;
 		case STATE_ENGAGE_TARGET:  		// fire on target
+			update_display();
 			engage_target();
 			state = STATE_INIT;
 			break;
@@ -88,7 +93,7 @@ void engage_target(void) //placeholder function until the taget engament sequenc
 	motor_stop(); //fire();
 	delay (3000);	
 	turn_left();
-	delay(1000);	
+	delay(2000);	
 }
 
 

@@ -29,21 +29,22 @@ void display_setup(void) {
 }
 
 
-static void display_init(void) //displays the empty blocks for states, sensors, blocks status and actions
+void display_init(void) //displays the empty blocks for states, sensors, blocks status and actions
 {  
   //display state block
   tft.setTextSize(3);
+  tft.setTextColor(HX8357_WHITE,HX8357_BLACK);
   tft.setCursor(100,20);
   tft.println("STATE");
-  tft.drawRect(10,50,380,80,HX8357_WHITE);
+  tft.drawRect(10,50,430,50,HX8357_WHITE);
   tft.setCursor(15,60);
   tft.println("Current: ");
  
   // Target stattus block
-  tft.setTextSize(2);
-  tft.setCursor(100,140);
+  tft.setTextSize(3);
+  tft.setCursor(100,130);
   tft.println("TARGET");
-  tft.drawRect(10,160,380,40,HX8357_WHITE);
+  tft.drawRect(10,160,430,40,HX8357_WHITE);
   tft.setTextSize(2);
   tft.setCursor(15,170);
   tft.println("Status: ");
@@ -54,42 +55,42 @@ static void display_init(void) //displays the empty blocks for states, sensors, 
 void update_display(void)
 { 
   tft.setTextSize(2);
-  tft.setCursor(120,65);
+  tft.setCursor(170,65);
   switch(state)
   {
     case STATE_INIT:
-		tft.fillRect(109,64,250,20,HX8357_BLACK);
-		tft.println("STATE_INIT");
-		display_target_status
+		//tft.fillRect(169,64,210,30,HX8357_BLACK);
+		tft.println("STATE_INIT            ");
+		display_target_status();
 		break;
     case STATE_CENTER_TARGET:
-		tft.fillRect(109,64,250,20,HX8357_BLACK);
-		tft.println("STATE_CENTER_TARGET");
+		//tft.fillRect(169,64,210,30,HX8357_BLACK);
+		tft.println("STATE_CENTER_TARGET   ");
 		break;
     case STATE_APPROACH_TARGET:
-		tft.fillRect(109,64,250,20,HX8357_BLACK);
-		tft.println("STATE_APPROACH_TARGET");
+		//tft.fillRect(169,64,210,30,HX8357_BLACK);
+		tft.println("STATE_APPROACH_TARGET ");
 		break;
 	case STATE_ENGAGE_TARGET:
-		tft.fillRect(109,64,250,20,HX8357_BLACK);
-		tft.println("STATE_ENGAGE_TARGET");
+		//tft.fillRect(169,64,210,30,HX8357_BLACK);
+		tft.println("STATE_ENGAGE_TARGET   ");
 		break;  
   }
   return;
 }
 
 //display in TARGET block
-static void display_target_status(void)
+void display_target_status(void)
 { //display of target is found of not
   tft.setTextSize(2);
   tft.setCursor(110, 170);
-  if (isTarget)
+  if (isTarget())
   {
-    tft.println("Target Located");
+    tft.println("Target Located ");
   }
-  else if (!isTarget)
+  else if (!isTarget())
   {
-    tft.fillRect(109, 169, 160, 20, HX8357_BLACK);
+    tft.println("No Target      ");
   }
   return;
 }

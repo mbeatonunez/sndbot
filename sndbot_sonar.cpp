@@ -42,7 +42,6 @@ void sonar_setup(void)
 
 void obstacle_avoid(void)
 {
-    display_avoid();
     /// ping echo cycle
     left_sensor();
     right_sensor();

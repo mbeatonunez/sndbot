@@ -21,7 +21,7 @@
 PixyUART pixy;               // using Serial3 port
 
 // pixy vatiables
-unsigned int area;          // predefined area of target 
+unsigned int area = 100;    // measured area at 4 ft from target 
 static int i = 0;           // iterate between signatures
 
 
@@ -32,60 +32,63 @@ void pixy_setup(void)
 
 bool isTarget(void)                          //identify if a target is present
 {
-	bool target_state = false;
 	uint16_t blocks   = pixy.getBlocks();
 	if (blocks)
 	{
 		motor_stop();
-		target_state  = true;
+		return true;
 	}
-	return target_state;
+ else
+ {
+    return false;
+ }
+	
 }
 
 bool isCenter(void)  			             // center the robot to the target
 {
 	uint16_t blocks    = pixy.getBlocks();
 	int x              = pixy.blocks[i].x;   //get x position
-	int Xmin           = 70;                 // min x position
+	int Xmin           = 120;                 // min x position
 	int Xmax           = 200;                // max x position
-	bool center_status = false; 
 	if (x < Xmin)                            //turn left if x position < max x position    
 		{
 			turn_left();
 		}
-	else if (x > Xmax) 						 //turn right if x position > max x position
+	else if (x > Xmax) 						           //turn right if x position > max x position
 		{
 			turn_right();
 		}
-	else  									 // When target is centered
+	else  									                 // When target is centered
 		{
 			motor_stop();
-			center_status = true;
+      delay(1500);
+			return true;
 		}
-	return center_status;
+	return false;
 }
 
 bool isReached(void)
 {
 	uint16_t blocks      = pixy.getBlocks();
-	unsigned int width   = pixy.blocks[i].width;   //get width       
-	unsigned int height  = pixy.blocks[i].height;  //get heigh 
+	unsigned int width   = pixy.blocks[i].width;   // get width       
+	unsigned int height  = pixy.blocks[i].height;  // get heigh 
 	unsigned int newarea = width * height;         // compare distance from target
-	bool reached_status = false;
-	if (newarea < (area-10))					   //go forward if too far
+
+	if (newarea < (area-10))					             // go forward if too far
 		{
 			drive_forward();
 		}
-	 else if(newarea > (area+10))				   //go backward if too close
+	 else if(newarea > (area+10))				          // go backward if too close
 		{
 			drive_backward();
 		}
 	 else 
 		{
 			motor_stop();
-			reached_status = true;
+			return true;
 		}
-	return reached_status;
+	return false;
 }
 
 		
