@@ -59,22 +59,24 @@ void update_display(void)
   switch(state)
   {
     case STATE_INIT:
-		//tft.fillRect(169,64,210,30,HX8357_BLACK);
-		tft.println("STATE_INIT            ");
-		display_target_status();
-		break;
+  		//tft.fillRect(169,64,210,30,HX8357_BLACK);
+  		tft.println("STATE_INIT            ");
+  		display_target_status();
+  		break;
     case STATE_CENTER_TARGET:
-		//tft.fillRect(169,64,210,30,HX8357_BLACK);
-		tft.println("STATE_CENTER_TARGET   ");
-		break;
+  		//tft.fillRect(169,64,210,30,HX8357_BLACK);
+  		tft.println("STATE_CENTER_TARGET   ");
+      display_target_status();
+  		break;
     case STATE_APPROACH_TARGET:
-		//tft.fillRect(169,64,210,30,HX8357_BLACK);
-		tft.println("STATE_APPROACH_TARGET ");
-		break;
-	case STATE_ENGAGE_TARGET:
-		//tft.fillRect(169,64,210,30,HX8357_BLACK);
-		tft.println("STATE_ENGAGE_TARGET   ");
-		break;  
+  		//tft.fillRect(169,64,210,30,HX8357_BLACK);
+  		tft.println("STATE_APPROACH_TARGET ");
+      display_target_status();
+  		break;
+	  case STATE_ENGAGE_TARGET:
+  		//tft.fillRect(169,64,210,30,HX8357_BLACK);
+  		tft.println("STATE_ENGAGE_TARGET   ");
+  		break;  
   }
   return;
 }

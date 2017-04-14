@@ -80,10 +80,10 @@ void obstacle_avoid(void)
     {
       drive_backward();	
     }
-  	else  
-  	{
-   	    drive_forward();
-  	}
+//  	else  
+//  	{
+//   	    drive_forward();
+//  	}
 	return;
 }
 

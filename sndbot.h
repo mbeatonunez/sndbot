@@ -9,10 +9,14 @@
 
 #include "Arduino.h"
 
-#define VERSION 0.8
+#define VERSION 0.85
 
 // state machines 
 extern enum FSM { STATE_INIT, STATE_CENTER_TARGET, STATE_APPROACH_TARGET, STATE_ENGAGE_TARGET} state;
+
+// global variable
+extern uint8_t speed; 
+
 
 // sndbot_display.c
 void display_setup(void);

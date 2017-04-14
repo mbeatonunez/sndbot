@@ -46,36 +46,37 @@ void loop() {
 	switch(state)
 	{
 		case STATE_INIT:      			// perform obstacle avoidance until target is found
+      speed = 128;
 			obstacle_avoid();
       update_display();
 			if (isTarget())
 			{
+        motor_stop();
+        delay(2000);
 				state = STATE_CENTER_TARGET;
 			}
+      if (!isTarget())        // make the forward movement dependent the pixy
+      {
+        drive_forward();
+      }
 			break;
-		case STATE_CENTER_TARGET:  		// center robot to target
-			update_display();
-			if (isCenter())
-			{
-				state = STATE_APPROACH_TARGET;
-			}
-//			else if (!isTarget())    		// return to default state if target is lost
-//			{
-//				state = STATE_INIT;
-//			}
-  			break;
-		case STATE_APPROACH_TARGET: 	// get target to range
-			update_display();
-			if (isReached())
-			{
-				state = STATE_ENGAGE_TARGET;
-			}
-//			else if (!isTarget())    		// return to default state if target is lost
-//			{
-//				state = STATE_INIT;
-//			}
-  			break;
-		case STATE_ENGAGE_TARGET:  		// fire on target
+    case STATE_CENTER_TARGET:     // center robot to target
+      update_display();
+      if (isCenter())
+      {               
+        state = STATE_APPROACH_TARGET;
+      }
+      break;
+    case STATE_APPROACH_TARGET:   // get target to range
+      update_display();
+      if (isReached())
+      {
+        motor_stop();
+        delay(2000); 
+        state = STATE_ENGAGE_TARGET;
+      }
+      break;   
+    case STATE_ENGAGE_TARGET:  		// fire on target
 			update_display();
 			engage_target();
 			state = STATE_INIT;
@@ -88,6 +89,7 @@ void loop() {
 
 void engage_target(void) //placeholder function until the taget engament sequence is completed
 {
+  speed = 128;
 	//simulate target engagement
 	//digitalWrite(gunMotor, HIGH);
 	motor_stop(); //fire();

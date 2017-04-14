@@ -21,7 +21,7 @@
 PixyUART pixy;               // using Serial3 port
 
 // pixy vatiables
-unsigned int area = 100;    // measured area at 4 ft from target 
+unsigned int area = 400;    // measured area at 4 ft from target 
 static int i = 0;           // iterate between signatures
 
 
@@ -32,10 +32,9 @@ void pixy_setup(void)
 
 bool isTarget(void)                          //identify if a target is present
 {
-	uint16_t blocks   = pixy.getBlocks();
-	if (blocks)
+	
+	if (pixy.getBlocks())
 	{
-		motor_stop();
 		return true;
 	}
  else
@@ -47,7 +46,8 @@ bool isTarget(void)                          //identify if a target is present
 
 bool isCenter(void)  			             // center the robot to the target
 {
-	uint16_t blocks    = pixy.getBlocks();
+  speed = 92;
+	pixy.getBlocks();
 	int x              = pixy.blocks[i].x;   //get x position
 	int Xmin           = 120;                 // min x position
 	int Xmax           = 200;                // max x position
@@ -61,8 +61,6 @@ bool isCenter(void)  			             // center the robot to the target
 		}
 	else  									                 // When target is centered
 		{
-			motor_stop();
-      delay(1500);
 			return true;
 		}
 	return false;
@@ -70,22 +68,21 @@ bool isCenter(void)  			             // center the robot to the target
 
 bool isReached(void)
 {
-	uint16_t blocks      = pixy.getBlocks();
+	pixy.getBlocks();
 	unsigned int width   = pixy.blocks[i].width;   // get width       
 	unsigned int height  = pixy.blocks[i].height;  // get heigh 
 	unsigned int newarea = width * height;         // compare distance from target
 
-	if (newarea < (area-10))					             // go forward if too far
+	if (newarea < (area-20))					             // go forward if too far
 		{
 			drive_forward();
 		}
-	 else if(newarea > (area+10))				          // go backward if too close
+	 else if(newarea > (area+20))				          // go backward if too close
 		{
 			drive_backward();
 		}
 	 else 
 		{
-			motor_stop();
 			return true;
 		}
 	return false;
