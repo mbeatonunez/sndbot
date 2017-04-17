@@ -21,7 +21,7 @@
 PixyUART pixy;               // using Serial3 port
 
 // pixy vatiables
-unsigned int area = 400;    // measured area at 4 ft from target 
+unsigned int area = 300;   
 static int i = 0;           // iterate between signatures
 
 
@@ -46,46 +46,48 @@ bool isTarget(void)                          //identify if a target is present
 
 bool isCenter(void)  			             // center the robot to the target
 {
-  speed = 92;
 	pixy.getBlocks();
+ int signature = pixy.blocks[i].signature;    //get target's signature
+ if (signature == 1)
+ {
 	int x              = pixy.blocks[i].x;   //get x position
-	int Xmin           = 120;                 // min x position
-	int Xmax           = 200;                // max x position
-	if (x < Xmin)                            //turn left if x position < max x position    
+	int Xmin           = 140;                 // min x position
+	int Xmax           = 180;                // max x position
+
+  unsigned int width   = pixy.blocks[i].width;   // get width       
+  unsigned int height  = pixy.blocks[i].height;  // get heigh 
+  unsigned int newarea = width * height;         // compare distance from target
+  
+  while (x < Xmin)                            //turn left if x position < max x position    
+    {
+      pixy.getBlocks();
+      x              = pixy.blocks[i].x;   //get x position
+      turn_left();
+    }
+  while (x > Xmax)                       //turn right if x position > max x position
+    {
+      pixy.getBlocks();
+      x              = pixy.blocks[i].x;
+      turn_right();
+    }
+  if (newarea < (area))                       // go forward if too far
+    {
+      drive_forward();
+    }
+
+  if (newarea > (area))                 // go backward if too close
+    {
+      drive_backward();
+    }
+	if (x < Xmax && x > Xmin && newarea < (area+10) && newarea > (area-10))             // When target is centered
 		{
-			turn_left();
-		}
-	else if (x > Xmax) 						           //turn right if x position > max x position
-		{
-			turn_right();
-		}
-	else  									                 // When target is centered
-		{
+      motor_stop;
 			return true;
 		}
-	return false;
-}
-
-bool isReached(void)
-{
-	pixy.getBlocks();
-	unsigned int width   = pixy.blocks[i].width;   // get width       
-	unsigned int height  = pixy.blocks[i].height;  // get heigh 
-	unsigned int newarea = width * height;         // compare distance from target
-
-	if (newarea < (area-20))					             // go forward if too far
-		{
-			drive_forward();
-		}
-	 else if(newarea > (area+20))				          // go backward if too close
-		{
-			drive_backward();
-		}
-	 else 
-		{
-			return true;
-		}
-	return false;
+   else
+    return false;
+ }
+	
 }
 
 		

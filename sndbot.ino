@@ -27,58 +27,60 @@
 
 #include "sndbot.h"
 
+uint8_t LASER = 33;
+
 enum FSM state;            // main state machine
-void engage_target(void);  // place holder function
+uint8_t interruptPin = 3;
+
+void bump_sensor(void); // ISR function for bump sensor
 
 void setup() {
 
   Serial.begin(9600);
-  motor_setup();
+  pinMode(LASER, OUTPUT);
+  digitalWrite(LASER,LOW);
   pixy_setup();
   sonar_setup();
   display_setup();
+  nerf_setup();
   state = STATE_INIT;
+  pinMode(interruptPin, INPUT_PULLUP);
+  //attachInterrupt(digitalPinToInterrupt(interruptPin), bump_sensor, RISING);
 }
 
 void loop() {
-
-	// state machine
+ 	// state machine
 	switch(state)
 	{
 		case STATE_INIT:      			// perform obstacle avoidance until target is found
-      speed = 128;
-			obstacle_avoid();
-      update_display();
-			if (isTarget())
+      if (isTarget())
 			{
+        digitalWrite(LASER,HIGH);        
         motor_stop();
-        delay(2000);
+        delay(2000); 
 				state = STATE_CENTER_TARGET;
 			}
       if (!isTarget())        // make the forward movement dependent the pixy
       {
+        speed = 128;
         drive_forward();
       }
+      obstacle_avoid();
+      update_display();
 			break;
     case STATE_CENTER_TARGET:     // center robot to target
       update_display();
+      speed = 64;
       if (isCenter())
-      {               
-        state = STATE_APPROACH_TARGET;
-      }
-      break;
-    case STATE_APPROACH_TARGET:   // get target to range
-      update_display();
-      if (isReached())
-      {
-        motor_stop();
-        delay(2000); 
+      { 
         state = STATE_ENGAGE_TARGET;
       }
-      break;   
+      break;
     case STATE_ENGAGE_TARGET:  		// fire on target
 			update_display();
+      speed = 128;
 			engage_target();
+      delay(1000);    
 			state = STATE_INIT;
 			break;
 		default:
@@ -87,15 +89,14 @@ void loop() {
 	} 
 }
 
-void engage_target(void) //placeholder function until the taget engament sequence is completed
+void bump_sensor(void)
 {
-  speed = 128;
-	//simulate target engagement
-	//digitalWrite(gunMotor, HIGH);
-	motor_stop(); //fire();
-	delay (3000);	
-	turn_left();
-	delay(2000);	
+  cli();
+  motor_stop();
+  delay(1000);
+  drive_forward();
+  delay(2000);
+  motor_stop();
+  sei();
 }
-
 

@@ -64,15 +64,15 @@ void obstacle_avoid(void)
     }
 
     //avoid obstacles, else drive forward
-    if(distance_front < (PING_MIN_DISTANCE+20)) 
+    if(distance_front < (PING_MIN_DISTANCE+10)) 
   	{
-        turn_left();     
+        turn_right();     
   	}
   	else if(distance_right < PING_MIN_DISTANCE) 
   	{
         turn_left();
     }
-  	else if(distance_left < (PING_MIN_DISTANCE+20)) 
+  	else if(distance_left < PING_MIN_DISTANCE) 
   	{
         turn_right();
   	}	
@@ -80,10 +80,6 @@ void obstacle_avoid(void)
     {
       drive_backward();	
     }
-//  	else  
-//  	{
-//   	    drive_forward();
-//  	}
 	return;
 }
 

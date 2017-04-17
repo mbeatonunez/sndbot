@@ -17,9 +17,8 @@
 #define TFT_DC 49
 Adafruit_HX8357 tft = Adafruit_HX8357(TFT_CS, TFT_DC);
 
-//internal functions
+//internal function
 static void display_init(void);
-static void display_target_status(void);
 
 void display_setup(void) {
   tft.begin(HX8357D);
@@ -55,45 +54,26 @@ void display_init(void) //displays the empty blocks for states, sensors, blocks 
 void update_display(void)
 { 
   tft.setTextSize(2);
-  tft.setCursor(170,65);
   switch(state)
   {
-    case STATE_INIT:
-  		//tft.fillRect(169,64,210,30,HX8357_BLACK);
-  		tft.println("STATE_INIT            ");
-  		display_target_status();
+    case STATE_INIT:      
+      tft.setCursor(170,65);
+  		tft.println("STATE_INIT           ");
+      tft.setCursor(110, 170);
+      tft.println("No Target      ");
   		break;
     case STATE_CENTER_TARGET:
-  		//tft.fillRect(169,64,210,30,HX8357_BLACK);
-  		tft.println("STATE_CENTER_TARGET   ");
-      display_target_status();
-  		break;
-    case STATE_APPROACH_TARGET:
-  		//tft.fillRect(169,64,210,30,HX8357_BLACK);
-  		tft.println("STATE_APPROACH_TARGET ");
-      display_target_status();
+      tft.setCursor(110, 170);
+      tft.println("Target Located ");
+      tft.setCursor(170,65);
+      tft.println("STATE_CENTER_TARGET   ");
   		break;
 	  case STATE_ENGAGE_TARGET:
-  		//tft.fillRect(169,64,210,30,HX8357_BLACK);
+      tft.setCursor(170,65);
   		tft.println("STATE_ENGAGE_TARGET   ");
   		break;  
   }
   return;
 }
 
-//display in TARGET block
-void display_target_status(void)
-{ //display of target is found of not
-  tft.setTextSize(2);
-  tft.setCursor(110, 170);
-  if (isTarget())
-  {
-    tft.println("Target Located ");
-  }
-  else if (!isTarget())
-  {
-    tft.println("No Target      ");
-  }
-  return;
-}
 
